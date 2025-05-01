@@ -1,4 +1,5 @@
 import express from "express"
+import router_usuario from "./router_usuario.mjs"
 
 const hello = async(req, res) =>{
     res.json({"app": "hello world"});
@@ -6,6 +7,11 @@ const hello = async(req, res) =>{
 
 const router = express.Router()
 
-router.use("/", hello)
+router.use("/usuario", router_usuario)
 
 export default router
+
+
+
+
+
