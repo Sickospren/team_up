@@ -13,6 +13,6 @@ export class Usuario {
 }
 
 export const getAll = async ()=>{
-    const [registros] = await db.query("SELECT * FROM usuarios_prueba");
+    const [registros] = await db.query("SELECT * FROM usuario");
     return registros;
 }
