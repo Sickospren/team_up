@@ -17,7 +17,10 @@ CREATE TABLE juegos (
     id_juego INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL,
     descripcion VARCHAR(500) NOT NULL,
+    banner VARCHAR(500),
+    foto_juego VARCHAR(500),
     dispositivos VARCHAR(50),
+    categoria VARCHAR(100),
     rangos JSON
 );
 
