@@ -13,8 +13,8 @@ export class Juego {
     }
 }
 
-export const getJuegoById = async (id_juego) => {
-    const [registros] = await db.query("SELECT * FROM juegos WHERE id_juego = ?", [id_juego]);
+export const getJuegoById = async (nombre_juego) => {
+    const [registros] = await db.query("SELECT * FROM juegos WHERE nombre = ?", [nombre_juego]);
 
     if (registros.length === 0) return null;
 
@@ -30,4 +30,42 @@ export const getJuegoById = async (id_juego) => {
         JSON.parse(juego.rangos || '[]')
     );
 };
+
+export const insertarJuego = async (juegoData) => {
+    const {
+        nombre,
+        descripcion,
+        banner,
+        foto_juego,
+        dispositivos,
+        categoria,
+        rangos
+    } = juegoData;
+
+    try {
+        const consulta = `
+            INSERT INTO juegos 
+            (nombre, descripcion, banner, foto_juego, dispositivos, categoria, rangos)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        
+        const [resultado] = await db.execute(consulta, [
+            nombre,
+            descripcion,
+            banner,
+            foto_juego,
+            dispositivos,
+            categoria,
+            JSON.stringify(rangos)
+        ]);
+
+        return { insertado: true, id: resultado.insertId };
+
+    } catch (error) {
+        console.error('Error al insertar el juego:', error);
+        throw error;
+    }
+};
+
+    
 

@@ -5,7 +5,7 @@ import router_juego from "./router_juego.mjs"
 const router = express.Router()
 
 router.use("/usuario", router_usuario)
-router.use("/juego", router_juego)
+router.use("/juegos", router_juego)
 
 export default router
 
