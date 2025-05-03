@@ -3,9 +3,9 @@ USE team_up;
 
 -- Tabla: usuario Modificada para logins usando OAUTH2
 CREATE TABLE usuario (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario_proveedor INT UNIQUE NOT NULL,
+    id_usuario INT PRIMARY KEY,
     nombre_usuario VARCHAR(255) UNIQUE NOT NULL,
+    nombre_usuario_app VARCHAR(255),
     avatar VARCHAR(255) NOT NULL,
     proveedor VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
