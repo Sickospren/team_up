@@ -1,4 +1,4 @@
-import { Juego, getJuegoById, insertarJuego} from "../models/juego.mjs";
+import { Juego, getJuegoById, insertarJuego, actualizarJuego, eliminarJuego} from "../models/juego.mjs";
 
 export const getJuegoID = async(req,res) => {
     try{        
@@ -39,5 +39,81 @@ export const annadirJuego = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ mensaje: "Error al añadir el juego", error });
+    }
+};
+
+export const editarJuego = async (req, res) => {
+    const juego = req.body;
+
+    if (!juego || !juego.nombre || !juego.descripcion || !juego.banner || !juego.foto_juego || 
+        !juego.dispositivos || !juego.categoria || !juego.rangos) {
+        return res.status(400).json({ mensaje: "Faltan datos para actualizar el juego" });
+    }
+
+    try {
+        const juegoExistente = await getJuegoById(juego.nombre);
+        if (!juegoExistente) {
+            return res.status(404).json({ mensaje: "El juego no existe" });
+        }
+
+        const juegoActualizado = new Juego(
+            null,
+            juego.nombre,
+            juego.descripcion,
+            juego.banner,
+            juego.foto_juego,
+            juego.dispositivos,
+            juego.categoria,
+            juego.rangos
+        );
+
+        const resultado = await actualizarJuego(juegoActualizado);
+
+        if (resultado.affectedRows > 0) {
+            res.json({ mensaje: "Juego actualizado correctamente", juego: juegoActualizado });
+        } else {
+            res.status(500).json({ mensaje: "No se pudo actualizar el juego" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al actualizar el juego", error });
+    }
+};
+
+
+export const borrarJuego = async (req, res) => {
+    const juego = req.body;
+    console.log("Hola");
+    if (!juego || !juego.nombre ) {
+        return res.status(400).json({ mensaje: "Faltan datos para borrar el juego" });
+    }
+
+    try {
+        const juegoExistente = await getJuegoById(juego.nombre);
+        if (!juegoExistente) {
+            return res.status(404).json({ mensaje: "El juego no existe" });
+        }
+
+        const juegoBorrado = new Juego(
+            null,
+            juego.nombre,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+
+        const resultado = await eliminarJuego(juegoBorrado);
+
+        if (resultado.affectedRows > 0) {
+            res.json({ mensaje: "Juego borrado correctamente", juego: juegoBorrado });
+        } else {
+            res.status(500).json({ mensaje: "No se pudo borrar el juego" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al borrar el juego", error });
     }
 };

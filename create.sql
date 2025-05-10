@@ -21,7 +21,8 @@ CREATE TABLE juegos (
     foto_juego VARCHAR(500),
     dispositivos VARCHAR(50),
     categoria VARCHAR(100),
-    rangos JSON
+    rangos JSON,
+    borrado TINYINT(1) NOT NULL DEFAULT 0
 );
 
 -- Tabla: usuarios_juego

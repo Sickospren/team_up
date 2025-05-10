@@ -67,5 +67,55 @@ export const insertarJuego = async (juegoData) => {
     }
 };
 
-    
+export const actualizarJuego = async (juegoActualizado) => {
+    const {
+        nombre,
+        descripcion,
+        banner,
+        foto_juego,
+        dispositivos,
+        categoria,
+        rangos
+    } = juegoActualizado;
 
+    try {
+        const consulta = `
+            UPDATE juegos 
+            SET nombre = ?, descripcion = ?, banner = ?, foto_juego = ?, dispositivos = ?, categoria = ?,  rangos = ?
+            WHERE nombre = ?
+        `;
+
+        const [resultado] = await db.execute(consulta, [
+            nombre,
+            descripcion,
+            banner,
+            foto_juego,
+            dispositivos,
+            categoria,
+            JSON.stringify(rangos),
+            nombre
+        ]);
+
+        return resultado;
+
+    } catch (error) {
+        console.error('Error al actualizar el juego:', error);
+        throw error;
+    }
+};
+
+export const eliminarJuego = async (juegoBorrado) => {
+    const {nombre} = juegoBorrado;
+    try {
+        const consulta = `
+            UPDATE juegos 
+            SET borrado = 1
+            WHERE nombre = ?
+        `;
+        const [resultado] = await db.execute(consulta, [nombre]);
+        return resultado;
+    } catch (error) {
+        console.error('Error al borrar el juego:', error);
+        throw error;
+    }
+};
