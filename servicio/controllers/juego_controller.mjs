@@ -4,6 +4,12 @@ export const getJuegoID = async(req,res) => {
     try{        
         const nombre_juego = req.params.nombre_juego;
         const juego = await getJuegoById(nombre_juego);
+
+        if(!juego){
+            res.status(404).json({mensaje:"Not found"});
+            return
+        }
+
         res.json(juego);
     }catch(error){
         res.status(500).json({mensaje:"error al conseguir los datos del juego",error});
