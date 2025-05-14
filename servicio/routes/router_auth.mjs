@@ -13,7 +13,7 @@ router.get('/google', passport.authenticate('google', { scope: ['email', 'profil
 
 router.get('/discord/callback',
     passport.authenticate('discord', {
-        failureRedirect: '/',
+        failureRedirect: 'http://localhost:5173/',
         session:false
     }),
     (req, res) => {
@@ -26,58 +26,57 @@ router.get('/discord/callback',
             provider: req.user.provider
         },process.env.JWT_SECRET,{expiresIn:'1d'} )
         // mandamos el token en la url
-        res.redirect(`/auth/dashboard?token=${token}`); // cambiar por la ruta de success login en el cliente
+        res.redirect(`http://localhost:5173/?token=${token}`);
     }
 );
 
 router.get('/google/callback',
     passport.authenticate('google', {
-        failureRedirect: '/',
-        session:false
+      failureRedirect: 'http://localhost:5173/',
+      session: false
     }),
     (req, res) => {
-
-        const token = jwt.sign({
-            id: req.user.id,
-            username: req.user.username,
-            email: req.user.email,
-            avatar: req.user.avatar,
-            provider: req.user.provider
-        },process.env.JWT_SECRET,{expiresIn:'1d'} )
-        // mandamos el token en la url
-        res.redirect(`/auth/dashboard?token=${token}`); // cambiar por la ruta de success login en el cliente
+      const token = jwt.sign({
+        id: req.user.id,
+        username: req.user.username,
+        email: req.user.email,
+        avatar: req.user.avatar,
+        provider: req.user.provider
+      }, process.env.JWT_SECRET, { expiresIn: '1d' });
+      // redirect al front
+      res.redirect(`http://localhost:5173/?token=${token}`);
     }
-);
+  );
 
 // Ruta de debug para probar el token desde el server
-router.get('/dashboard', (req, res) => {
-    const { token } = req.query; // Sacamos el token de la url
+// router.get('/dashboard', (req, res) => {
+//     const { token } = req.query; // Sacamos el token de la url
 
-    if (!token) {
-        return res.status(400).send('<h1>Token no proporcionado</h1>');
-    }
+//     if (!token) {
+//         return res.status(400).send('<h1>Token no proporcionado</h1>');
+//     }
 
-    try {
+//     try {
         
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const { username, id, avatar, provider, email } = decoded;
+//         const { username, id, avatar, provider, email } = decoded;
 
-        res.send(`
-            <h1>Hola, ${username}!</h1>
-            <img src="${avatar}" alt="Avatar de ${username}" width="128" height="128" style="border-radius: 50%;">
-            <p><strong>Proveedor:</strong> ${provider}</p>
-            <p><strong>Email:</strong> ${email || 'No disponible'}</p>
-            <p><strong>Id:</strong> ${id}</p>
-            <p><strong>Avatar-String:</strong> ${avatar}</p>
-            <p><strong>Token:</strong> ${token}</p> <!-- Mostramos el token -->
-            <p><a href="/auth/logout">Cerrar sesión</a></p>
-        `);
-    } catch (err) {
-        // Si el token es inválido o expirado
-        return res.status(403).send('<h1>Token inválido</h1>');
-    }
-});
+//         res.send(`
+//             <h1>Hola, ${username}!</h1>
+//             <img src="${avatar}" alt="Avatar de ${username}" width="128" height="128" style="border-radius: 50%;">
+//             <p><strong>Proveedor:</strong> ${provider}</p>
+//             <p><strong>Email:</strong> ${email || 'No disponible'}</p>
+//             <p><strong>Id:</strong> ${id}</p>
+//             <p><strong>Avatar-String:</strong> ${avatar}</p>
+//             <p><strong>Token:</strong> ${token}</p> <!-- Mostramos el token -->
+//             <p><a href="/auth/logout">Cerrar sesión</a></p>
+//         `);
+//     } catch (err) {
+//         // Si el token es inválido o expirado
+//         return res.status(403).send('<h1>Token inválido</h1>');
+//     }
+// });
 
 // Debug para salir 
 router.get('/logout', (req, res) => {
