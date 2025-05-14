@@ -14,7 +14,7 @@ export class Juego {
 }
 
 export const getJuegoById = async (nombre_juego) => {
-    const [registros] = await db.query("SELECT * FROM juegos WHERE nombre = ?", [nombre_juego]);
+    const [registros] = await db.query("SELECT * FROM juegos WHERE nombre = ? AND borrado = 0", [nombre_juego]);
 
     if (registros.length === 0) return null;
 
