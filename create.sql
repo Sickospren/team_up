@@ -1,14 +1,15 @@
-CREATE DATABASE team_up;
+CREATE DATABASE IF NOT EXISTS team_up;
 USE team_up;
 
--- Tabla: usuario Modificada para logins usando OAUTH2
+-- Tabla: usuario 
 CREATE TABLE usuario (
-    id_usuario INT PRIMARY KEY,
-    nombre_usuario VARCHAR(255) UNIQUE NOT NULL,
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    id_oauth VARCHAR(100) NOT NULL,
+    nombre_usuario VARCHAR(255) NOT NULL,
     nombre_usuario_app VARCHAR(255),
     avatar VARCHAR(255) NOT NULL,
     proveedor VARCHAR(50) NOT NULL,
-    email VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL UNIQUE,
     fecha_registro DATE NOT NULL
 );
 

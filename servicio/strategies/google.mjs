@@ -5,7 +5,6 @@ import pool from '../config/db.mjs';
 
 dotenv.config();
 
-
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID_GOOGLE,
     clientSecret: process.env.CLIENT_SECRET_GOOGLE,
@@ -19,29 +18,58 @@ passport.use(new GoogleStrategy({
     const provider = 'google';
 
     const hoy = new Date();
-
     const anio = hoy.getFullYear();
     const mes = String(hoy.getMonth() + 1).padStart(2, '0');
     const dia = String(hoy.getDate()).padStart(2, '0');
     const fechaMySQL = `${anio}-${mes}-${dia}`;
 
-    const user = {
-        id,
-        username: displayName,
-        avatar: photos?.[0]?.value,
-        provider: provider,
-        email: email,
-        date: fechaMySQL
-    };
-
     try {
-        await pool.query(`
-            INSERT INTO usuario (id_usuario, nombre_usuario, avatar, proveedor, email, fecha_registro)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE nombre_usuario = VALUES(nombre_usuario), avatar = VALUES(avatar), email = VALUES(email)
-        `, [id, displayName, avatar_url, provider, email, fechaMySQL]);
+        // Comprobamos el email de usuario
+        const [rows] = await pool.query(`SELECT * FROM usuario WHERE email = ?`, [email]);
 
-        return done(null, user);
+        if (rows.length > 0) {
+            const usuarioExistente = rows[0];
+            if (usuarioExistente.proveedor !== provider) {
+                // Si el correo esta registrado con ese usuario devolvemos un error
+                return done(null, false, {message: `cuenta ya registrada con otro proveedor`});
+            } else {
+                // Si el proveedor es el mismo actualizamos los datos
+                await pool.query(`
+                    UPDATE usuario
+                    SET nombre_usuario = ?, avatar = ?, fecha_registro = ?
+                    WHERE email = ?
+                `, [displayName, avatar_url, fechaMySQL, email]);
+
+                const user = {
+                    id: usuarioExistente.id_usuario,
+                    username: displayName,
+                    avatar: avatar_url,
+                    provider,
+                    email,
+                    date: fechaMySQL
+                };
+
+                return done(null, user);
+            }
+        } else {
+            // Si el usuario es nuevo lo insertamos en la bd
+            const [result] = await pool.query(`
+                INSERT INTO usuario (id_oauth, nombre_usuario, avatar, proveedor, email, fecha_registro)
+                VALUES (?, ?, ?, ?, ?, ?)
+            `, [id, displayName, avatar_url, provider, email, fechaMySQL]);
+
+            const user = {
+                id: result.insertId,
+                username: displayName,
+                avatar: avatar_url,
+                provider,
+                email,
+                date: fechaMySQL
+            };
+
+            return done(null, user);
+        }
+
     } catch (err) {
         console.error('Error guardando en la base de datos (Google):', err);
         return done(err, null);
