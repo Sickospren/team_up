@@ -57,11 +57,11 @@ CREATE TABLE chat_usuario (
 -- Tabla: mensajes
 CREATE TABLE mensajes (
     id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
-    id_sala INT NOT NULL,
+    id_chat INT NOT NULL,
     id_usuario INT NOT NULL,
     mensaje TEXT NOT NULL,
     fecha_mensaje DATETIME NOT NULL,
-    FOREIGN KEY (id_sala) REFERENCES chat(id_chat),
+    FOREIGN KEY (id_chat) REFERENCES chat(id_chat),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 

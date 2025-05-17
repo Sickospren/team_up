@@ -1,0 +1,1 @@
+node --env-file=process.env .\servicio\server.mjs
