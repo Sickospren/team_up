@@ -1,7 +1,7 @@
 import db from "../config/db.mjs";
 
 export class Usuario {
-    constructor(id_usuario, proveedor, nombre_usuario, avatar, email, fecha_registro, nombre_usuario_app){
+    constructor(id_usuario, proveedor, nombre_usuario, avatar, email, fecha_registro, nombre_usuario_app) {
         this.id_usuario = id_usuario;
         this.proveedor = proveedor;
         this.nombre_usuario = nombre_usuario;
@@ -12,7 +12,26 @@ export class Usuario {
     }
 }
 
-export const getAll = async ()=>{
+export const getAll = async () => {
     const [registros] = await db.query("SELECT * FROM usuario");
     return registros;
+}
+
+export const getId = async (nombre_usuario) => {
+    try {
+        const [rows] = await db.query(
+            "SELECT id_usuario FROM usuario WHERE nombre_usuario = ?", 
+            [nombre_usuario]
+        );
+        
+        if (rows.length === 0) {
+            return null;
+        }
+        
+        // Devolver solo el objeto con el ID, no todo el array
+        return rows[0];
+    } catch (error) {
+        console.error("Error en la consulta de ID de usuario:", error);
+        throw error;
+    }
 }
