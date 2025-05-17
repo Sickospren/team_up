@@ -13,6 +13,27 @@ export class Juego {
     }
 }
 
+export const getAllJuegos = async () => {
+    try {
+        const [registros] = await db.query("SELECT * FROM juegos WHERE borrado = 0");
+
+        return registros.map(juego => new Juego(
+            juego.id_juego,
+            juego.nombre,
+            juego.descripcion,
+            juego.banner,
+            juego.foto_juego,
+            juego.dispositivos,
+            juego.categoria,
+            JSON.parse(juego.rangos || '[]')
+        ));
+    } catch (error) {
+        console.error('Error al obtener todos los juegos:', error);
+        throw error;
+    }
+};
+
+
 export const getJuegoById = async (nombre_juego) => {
     const [registros] = await db.query("SELECT * FROM juegos WHERE nombre = ? AND borrado = 0", [nombre_juego]);
 
@@ -45,7 +66,7 @@ export const insertarJuego = async (juegoData) => {
     try {
         const consulta = `
             INSERT INTO juegos 
-            (nombre, descripcion, banner, foto_juego, dispositivos, categoria, rangos)
+            (nombre, descripcion, banner, foto_juego, dispositivos, id_categoria, rangos)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
         

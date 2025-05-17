@@ -1,6 +1,12 @@
 CREATE DATABASE IF NOT EXISTS team_up;
 USE team_up;
 
+-- Tabla: categorias
+CREATE TABLE categorias (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL
+);
+
 -- Tabla: usuario 
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,9 +27,10 @@ CREATE TABLE juegos (
     banner VARCHAR(500),
     foto_juego VARCHAR(500),
     dispositivos VARCHAR(50),
-    categoria VARCHAR(100),
+    id_categoria INT NOT NULL,
     rangos JSON,
-    borrado TINYINT(1) NOT NULL DEFAULT 0
+    borrado TINYINT(1) NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
 );
 
 -- Tabla: usuarios_juego

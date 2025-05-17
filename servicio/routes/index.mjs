@@ -2,6 +2,7 @@ import express from "express"
 import router_usuario from "./router_usuario.mjs"
 import router_juego from "./router_juego.mjs"
 import router_auth from "./router_auth.mjs"
+import router_categoria from "./router_categoria.mjs"
 
 const router = express.Router()
 
@@ -26,6 +27,7 @@ router.get('/', (req, res) => {
 router.use("/usuario", router_usuario)
 router.use("/juegos", router_juego)
 router.use("/auth", router_auth)
+router.use("/categorias", router_categoria)
 
 export default router
 

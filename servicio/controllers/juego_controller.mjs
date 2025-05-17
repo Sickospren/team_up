@@ -1,4 +1,20 @@
-import { Juego, getJuegoById, insertarJuego, actualizarJuego, eliminarJuego} from "../models/juego.mjs";
+import { Juego, getAllJuegos ,getJuegoById, insertarJuego, actualizarJuego, eliminarJuego} from "../models/juego.mjs";
+
+export const getAllJuego = async(req,res) => {
+    try{        
+        const juegos = await getAllJuegos();
+
+        if(!juegos){
+            res.status(404).json({mensaje:"Not found"});
+            return
+        }
+
+        res.json(juegos);
+    }catch(error){
+        res.status(500).json({mensaje:"error al conseguir los datos de todos los juegos",error});
+    }
+
+}
 
 export const getJuegoID = async(req,res) => {
     try{        
