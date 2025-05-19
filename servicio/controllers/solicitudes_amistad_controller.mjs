@@ -39,7 +39,7 @@ export const getSolicitudesPenditentesEmail = async(req, res) => {
         const result = await getSolicitudesPenditentesUsuario(email);
         res.json({
             success: true,
-            data: result
+            data: (result.length === 0) ? "No hay registros" : result
         });
     } catch (error) {
         res.status(500).json({
@@ -64,7 +64,7 @@ export const getSolicitudesEnviadasEmail = async(req, res) => {
         const result = await getSolicitudesEnviadasUsuario(email);
         res.json({
             success: true,
-            data: result
+            data: (result.length === 0) ? "No hay registros" : result
         });
     } catch (error) {
         res.status(500).json({
@@ -89,7 +89,7 @@ export const revisarSolicitudes = async(req, res) => {
         const result = await revisarSolicitudesPendientes(id_remitente);
         res.json({
             success: true,
-            data: result
+            data: (result.length === 0) ? "No hay registros" : result
         });
     } catch (error) {
         res.status(500).json({
