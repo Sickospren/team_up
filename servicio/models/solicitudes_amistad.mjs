@@ -119,6 +119,61 @@ export const rechazarSolicitud = async (id_solicitud) => {
   }
 };
 
+export const aceptarSolicitud = async (id_solicitud) => {
+  try {
+    const [updateResult] = await db.query(`
+      UPDATE solicitudes_amistad
+      SET estado = 'aceptada'
+      WHERE id_solicitud = ?
+    `, [id_solicitud]);
+
+    if (updateResult.affectedRows === 0) {
+      return {
+        success: false,
+        message: 'No se encontró la solicitud: ' + id_solicitud
+      };
+    }
+
+    // Obtener id_remitente e id_destinatario de la solicitud aceptada
+    const [rows] = await db.query(`
+      SELECT id_remitente, id_destinatario
+      FROM solicitudes_amistad
+      WHERE id_solicitud = ?
+    `, [id_solicitud]);
+
+    if (rows.length === 0) {
+      return {
+        success: false,
+        message: 'Solicitud no encontrada después de actualizar: ' + id_solicitud
+      };
+    }
+
+    const { id_remitente, id_destinatario } = rows[0];
+
+    // Ordenar los ids para cumplir con la restricción CHECK (id_usuario_1 < id_usuario_2)
+    const id_usuario_1 = Math.min(id_remitente, id_destinatario);
+    const id_usuario_2 = Math.max(id_remitente, id_destinatario);
+
+    
+    await db.query(`
+      INSERT INTO usuarios_amistades (id_usuario_1, id_usuario_2, fecha_amistad)
+      VALUES (?, ?, CURDATE())
+    `, [id_usuario_1, id_usuario_2]);
+
+    return {
+      success: true,
+      message: 'Solicitud aceptada y amistad creada correctamente.'
+    };
+  } catch (error) {
+    console.error('Error al aceptar solicitud y crear amistad:', error);
+    return {
+      success: false,
+      message: 'Error al procesar la solicitud.'
+    };
+  }
+};
+
+
 
 /** 
  * Metodo que devuelve las solicitudes del remitente que tienen menos de 7 dias, 

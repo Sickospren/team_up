@@ -1,4 +1,4 @@
-import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesPendientes} from "../models/solicitudes_amistad.mjs";
+import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesPendientes,aceptarSolicitud} from "../models/solicitudes_amistad.mjs";
 
 export const newSolicitud = async (req, res) => {
     const { id_remitente, id_destinatario } = req.body;
@@ -117,6 +117,29 @@ export const rechazar = async(req, res) => {
         res.status(500).json({
             success: false,
             mensaje: "Error al rechazar la solicitud",
+            error
+        });
+    }
+};
+
+// Acepta la solicitud y crea la amistad
+export const aceptar = async(req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            mensaje: "Falta el parámetro 'id'"
+        });
+    }
+
+    try {
+        const result = await aceptarSolicitud(id);
+        res.json({ result });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            mensaje: "Error al aceptar la solicitud",
             error
         });
     }
