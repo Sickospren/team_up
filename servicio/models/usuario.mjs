@@ -12,7 +12,24 @@ export class Usuario {
     }
 }
 
-export const getAll = async ()=>{
+export const getAll = async () => {
     const [registros] = await db.query("SELECT * FROM usuario");
     return registros;
 }
+
+export const getUsuario = async (emailUsuario) => {
+  const [registros] = await db.query("SELECT * FROM usuario WHERE email = ?", [emailUsuario]);
+
+  if (registros.length === 0) return null;
+
+  const usuario = registros[0];
+  return new Usuario(
+    usuario.id_usuario,
+    usuario.proveedor,
+    usuario.nombre_usuario,
+    usuario.avatar,
+    usuario.email,
+    usuario.fecha_registro,
+    usuario.nombre_usuario_app,
+  );
+};
