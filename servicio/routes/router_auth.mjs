@@ -18,7 +18,8 @@ router.get('/discord/callback',
     }),
     (req, res) => {
         const token = jwt.sign({
-            id_oauth: req.user.id, 
+            id_usuario: req.user.id,
+            id_oauth : req.user.id_oauth,
             username: req.user.username,
             email: req.user.email,
             avatar: req.user.avatar,
@@ -36,7 +37,8 @@ router.get('/google/callback',
     }),
     (req, res) => {
         const token = jwt.sign({
-            id_oauth: req.user.id, 
+            id_usuario: req.user.id,
+            id_oauth: req.user.id_oauth, 
             username: req.user.username,
             email: req.user.email,
             avatar: req.user.avatar,

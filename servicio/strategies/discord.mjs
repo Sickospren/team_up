@@ -44,6 +44,7 @@ passport.use(new DiscordStrategy({
 
             const user = {
                 id: usuarioExistente.id_usuario,
+                id_oauth: id,
                 username,
                 avatar: avatar_url,
                 provider,
@@ -61,6 +62,7 @@ passport.use(new DiscordStrategy({
 
             const user = {
                 id: result.insertId,
+                id_oauth: id,
                 username,
                 avatar: avatar_url,
                 provider,

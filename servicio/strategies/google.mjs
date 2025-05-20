@@ -60,6 +60,7 @@ passport.use(new GoogleStrategy({
 
             const user = {
                 id: result.insertId,
+                id_oauth: id,
                 username: displayName,
                 avatar: avatar_url,
                 provider,
