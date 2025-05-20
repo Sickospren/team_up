@@ -35,7 +35,7 @@ export function configurarSocketIO(io) {
 
         // Cargar historial de mensajes
         const [messages] = await db.query(
-          `SELECT m.id_mensaje, m.mensaje as content, u.nombre_usuario as username, m.fecha_mensaje 
+          `SELECT m.id_mensaje, m.mensaje as content, m.id_chat, m.id_usuario, u.nombre_usuario as username, m.fecha_mensaje 
            FROM mensajes m 
            JOIN usuario u ON m.id_usuario = u.id_usuario 
            WHERE m.id_chat = ? 
