@@ -25,24 +25,42 @@ export class solicitud_amistad {
 }
 
 export const nuevaSolicitud = async (id_remitente, id_destinatario) => {
-    const estado = `pendiente`;
-    const fecha_solicitud = getMySQLDate();
+  const estado = 'pendiente';
+  const fecha_solicitud = getMySQLDate();
 
-    try{
-        const[result] = await db.query(`
-            INSERT INTO solicitudes_amistad (id_remitente, id_destinatario, estado, fecha_solicitud) VALUES (?,?,?,?)
-            `,[id_remitente, id_destinatario,estado, fecha_solicitud])
-            return {
-                success: true,
-                id_solicitud: result.insertId
-            }
-    }catch(error){
-        return {
-            success: false,
-            message: `No se pudo crear la solicitud`
-        }
+  try {
+    // verificamos las peticiones de los ultimos 7 dias
+    const [rows] = await db.query(`
+      SELECT id_solicitud FROM solicitudes_amistad 
+      WHERE id_remitente = ? AND id_destinatario = ?
+        AND fecha_solicitud >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    `, [id_remitente, id_destinatario]);
+
+    if (rows.length > 0) {
+      return {
+        success: false,
+        message: 'Ya has enviado una solicitud de amistad a este usuario en los últimos 7 días.'
+      };
     }
-}
+
+    // Si no tiene ninguna inserta
+    const [result] = await db.query(`
+      INSERT INTO solicitudes_amistad (id_remitente, id_destinatario, estado, fecha_solicitud)
+      VALUES (?, ?, ?, ?)
+    `, [id_remitente, id_destinatario, estado, fecha_solicitud]);
+
+    return {
+      success: true,
+      id_solicitud: result.insertId
+    };
+  } catch (error) {
+    console.error('Error al crear la solicitud:', error);
+    return {
+      success: false,
+      message: 'No se pudo crear la solicitud por un error interno.'
+    };
+  }
+};
 
 export const getSolicitudesPenditentesUsuario = async (email) => {
     try {
@@ -176,11 +194,12 @@ export const aceptarSolicitud = async (id_solicitud) => {
 
 
 /** 
- * Metodo que devuelve las solicitudes del remitente que tienen menos de 7 dias, 
- * si hay alguna que ya ha caducado las actualiza antes de devolverlas 
+ * -- SOLICITUDES ENVIADAS POR EL USUARIO--
+ * Revisa las solicitudes enviadas por el usuario, si han pasado
+ * 7 dias las cancela
  * 
 */
-export const revisarSolicitudesPendientes = async (id_remitente) => {
+export const revisarSolicitudesEnviadas = async (id_remitente) => {
   try {
     // Actualizar solicitudes pendientes > 7 días a 'cancelada'
     await db.query(`
@@ -210,6 +229,47 @@ export const revisarSolicitudesPendientes = async (id_remitente) => {
     return rows;
   } catch (error) {
     console.error('Error al revisar solicitudes pendientes:', error);
+    return [];
+  }
+};
+
+
+/** 
+ * -- SOLICITUDES RECIBIDAS POR EL USUARIO--
+ * Igual que el anterior pero al reves, revisa las peticiones
+ * que te han enviado, si alguna tiene mas de 7 dias se cancela automaitcamente
+ * 
+*/
+export const revisarSolicitudesRecibidas = async (id_destinatario) => {
+  try {
+    // Actualizar solicitudes pendientes > 7 días a 'cancelada'
+    await db.query(`
+      UPDATE solicitudes_amistad
+      SET estado = 'cancelada'
+      WHERE id_destinatario = ?
+        AND estado = 'pendiente'
+        AND fecha_solicitud < (NOW() - INTERVAL 7 DAY)
+    `, [id_destinatario]);
+
+    // Devolver solo las solicitudes pendientes tras la actualización
+    const [rows] = await db.query(`
+      SELECT 
+        sa.id_solicitud,
+        sa.estado,
+        sa.fecha_solicitud,
+        u_remitente.id_usuario AS id_remitente,
+        u_remitente.nombre_usuario AS nombre_remitente,
+        u_remitente.email AS email_remitente,
+        u_remitente.avatar AS avatar_remitente
+      FROM solicitudes_amistad sa
+      INNER JOIN usuario u_remitente ON sa.id_remitente = u_remitente.id_usuario
+      WHERE sa.id_destinatario = ? AND sa.estado = 'pendiente'
+      ORDER BY sa.fecha_solicitud DESC
+    `, [id_destinatario]);
+
+    return rows;
+  } catch (error) {
+    console.error('Error al revisar solicitudes recibidas:', error);
     return [];
   }
 };

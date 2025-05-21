@@ -1,4 +1,4 @@
-import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesPendientes,aceptarSolicitud} from "../models/solicitudes_amistad.mjs";
+import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesEnviadas,revisarSolicitudesRecibidas,aceptarSolicitud} from "../models/solicitudes_amistad.mjs";
 
 export const newSolicitud = async (req, res) => {
     const { id_remitente, id_destinatario } = req.body;
@@ -75,18 +75,18 @@ export const getSolicitudesEnviadasEmail = async(req, res) => {
     }
 };
 
-export const revisarSolicitudes = async(req, res) => {
-    const id_remitente = req.body.id_remitente;
+export const revisarRecibidas = async(req, res) => {
+    const id_destinatario = req.body.id_destinatario;
 
-    if (!id_remitente) {
+    if (!id_destinatario) {
         return res.status(400).json({
             success: false,
-            mensaje: "Falta el parámetro 'id_remitente'"
+            mensaje: "Falta el parámetro 'id_destinatario'"
         });
     }
 
     try {
-        const result = await revisarSolicitudesPendientes(id_remitente);
+        const result = await revisarSolicitudesRecibidas(id_destinatario);
         res.json({
             success: true,
             data: (result.length === 0) ? "No hay registros" : result
@@ -99,6 +99,35 @@ export const revisarSolicitudes = async(req, res) => {
         });
     }
 };
+
+
+export const revisarEnviadas = async(req, res) => {
+    const id_remitente = req.body.id_remitente;
+
+    if (!id_remitente) {
+        return res.status(400).json({
+            success: false,
+            mensaje: "Falta el parámetro 'id_remitente'"
+        });
+    }
+
+    try {
+        const result = await revisarSolicitudesEnviadas(id_remitente);
+        res.json({
+            success: true,
+            data: (result.length === 0) ? "No hay registros" : result
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            mensaje: "Error al revisar las solicitudes",
+            error
+        });
+    }
+};
+
+
+
 
 export const rechazar = async(req, res) => {
     const { id } = req.body;
