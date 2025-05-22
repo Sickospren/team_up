@@ -1,4 +1,7 @@
 import db from "../config/db.mjs";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export function configurarSocketIO(io) {
   io.on('connection', async (socket) => {

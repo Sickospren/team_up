@@ -17,18 +17,17 @@ export const getAll = async () => {
     return registros;
 }
 
-export const getId = async (nombre_usuario) => {
+export const getId = async (email) => {
     try {
         const [rows] = await db.query(
-            "SELECT id_usuario FROM usuario WHERE nombre_usuario = ?", 
-            [nombre_usuario]
+            "SELECT id_usuario FROM usuario WHERE email = ?", 
+            [email]
         );
         
         if (rows.length === 0) {
             return null;
         }
         
-        // Devolver solo el objeto con el ID, no todo el array
         return rows[0];
     } catch (error) {
         console.error("Error en la consulta de ID de usuario:", error);

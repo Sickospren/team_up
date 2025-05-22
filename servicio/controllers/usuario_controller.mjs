@@ -13,23 +13,18 @@ export const getAllUsuarios = async (req, res) => {
 
 export const getUsuarioId = async (req, res) => {
     try {
-        // Obtener el nombre de usuario de los parámetros de consulta (query params)
-        const { nombre_usuario } = req.query;
-        
-        // Verificar que se proporcionó un nombre de usuario
-        if (!nombre_usuario) {
-            return res.status(400).json({ mensaje: "Se requiere el nombre de usuario" });
+        const { email } = req.query;
+
+        if (!email) {
+            return res.status(400).json({ mensaje: "Se requiere el email del usuario" });
         }
-        
-        // Llamar a la función del modelo
-        const resultado = await getId(nombre_usuario);
-        
-        // Verificar si se encontró el usuario
+
+        const resultado = await getId(email);
+
         if (resultado === null) {
             return res.status(404).json({ mensaje: "Usuario no encontrado" });
         }
 
-        // Devolver el ID del usuario
         res.json(resultado);
     } catch (error) {
         console.error("Error al obtener ID del usuario:", error);
