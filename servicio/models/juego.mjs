@@ -15,7 +15,12 @@ export class Juego {
 
 export const getAllJuegos = async () => {
     try {
-        const [registros] = await db.query("SELECT * FROM juegos WHERE borrado = 0");
+        const [registros] = await db.query(`
+            SELECT j.*, c.nombre AS nombre_categoria
+            FROM juegos j
+            JOIN categorias c ON j.id_categoria = c.id_categoria
+            WHERE j.borrado = 0
+        `);
 
         return registros.map(juego => new Juego(
             juego.id_juego,
@@ -24,7 +29,7 @@ export const getAllJuegos = async () => {
             juego.banner,
             juego.foto_juego,
             juego.dispositivos,
-            juego.categoria,
+            juego.nombre_categoria,
             JSON.parse(juego.rangos || '[]')
         ));
     } catch (error) {
@@ -34,12 +39,15 @@ export const getAllJuegos = async () => {
 };
 
 
+
 export const getJuegoById = async (nombre_juego) => {
     const [registros] = await db.query("SELECT * FROM juegos WHERE nombre = ? AND borrado = 0", [nombre_juego]);
 
     if (registros.length === 0) return null;
 
     const juego = registros[0];
+    const [registro] = await db.query("SELECT nombre FROM categorias WHERE id_categoria = ?", [juego.id_categoria]);
+    const juegoCategoria = registro[0];
     return new Juego(
         juego.id_juego,
         juego.nombre,
@@ -47,7 +55,7 @@ export const getJuegoById = async (nombre_juego) => {
         juego.banner,
         juego.foto_juego,
         juego.dispositivos,
-        juego.categoria,
+        juegoCategoria.nombre,
         JSON.parse(juego.rangos || '[]')
     );
 };
@@ -102,7 +110,7 @@ export const actualizarJuego = async (juegoActualizado) => {
     try {
         const consulta = `
             UPDATE juegos 
-            SET nombre = ?, descripcion = ?, banner = ?, foto_juego = ?, dispositivos = ?, categoria = ?,  rangos = ?
+            SET nombre = ?, descripcion = ?, banner = ?, foto_juego = ?, dispositivos = ?, id_categoria = ?,  rangos = ?
             WHERE nombre = ?
         `;
 
