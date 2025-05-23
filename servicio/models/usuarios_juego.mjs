@@ -32,6 +32,29 @@ export const getUsuariosPorJuego = async (idJuego) => {
   return registros;
 };
 
+// Igual que el anterior pero para un usuaio en concreto
+export const getJuegosPorUsuario = async (idUsuario) => {
+  const [registros] = await db.query(
+    `SELECT 
+      u.id_usuario,
+      u.nombre_usuario,
+      u.nombre_usuario_app,
+      u.avatar,
+      u.email,
+      uj.game_tag,
+      uj.datos_extra_juego,
+      j.id_juego,
+      j.nombre AS nombre_juego
+    FROM usuarios_juego uj
+    JOIN usuario u ON uj.id_usuario = u.id_usuario
+    JOIN juegos j ON uj.id_juego = j.id_juego
+    WHERE uj.id_usuario = ?`,
+    [idUsuario]
+  );
+
+  return registros;
+};
+
 
 export const guardarUsuarioJuego = async (idUsuario, idJuego, gameTag, datosExtraJuego = {}) => {
   try {
