@@ -1,4 +1,4 @@
-import { Usuario, getAll, getId, getUsuario } from "../models/usuario.mjs";
+import { Usuario, getAll, getId, getUsuario,cambiarNombreUser  } from "../models/usuario.mjs";
 
 export const getAllUsuarios = async (req, res) => {
 
@@ -32,7 +32,7 @@ export const getUsuarioId = async (req, res) => {
     }
 }
 
-export const getDatosUsuario = async(req,res) => {
+export const getDatosUsuario = async (req,res) => {
     const email = req.query.email;
 
     try{        
@@ -44,3 +44,31 @@ export const getDatosUsuario = async(req,res) => {
 
 }
 
+export const cambiarNombre = async (req, res) => {
+    const user = req.body;
+    if(!user || !user.nombre_usuario_app || !user.id_usuario){
+        return res.status(400).json({ mensaje: "Nuevo nombre no pasado" });
+    }
+    try {
+         const usuarioCambiado = new Usuario(
+            user.id_usuario,
+            null,
+            null,
+            null,
+            null,
+            null,
+            user.nombre_usuario_app
+            );
+        const resultado = await cambiarNombreUser(usuarioCambiado);
+
+        if (resultado.affectedRows > 0) {
+            res.json({ mensaje: "Nombre cambiado correctamente", usuario: usuarioCambiado });
+        } else {
+            res.status(500).json({ mensaje: "No se pudo cambiar el nombre" });
+        }
+
+    } catch (error) {
+       res.status(500).json({ mensaje: "No se pudo cambiar el nombre" });
+    }
+
+};

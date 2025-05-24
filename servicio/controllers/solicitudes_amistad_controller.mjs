@@ -2,6 +2,7 @@ import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUs
 
 export const newSolicitud = async (req, res) => {
     const { id_remitente, id_destinatario } = req.body;
+    console.log(id_remitente, " // ", id_destinatario);
 
     if (!id_remitente || !id_destinatario) {
         return res.status(400).json({

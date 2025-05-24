@@ -105,11 +105,9 @@ export const editarJuego = async (req, res) => {
 
 export const borrarJuego = async (req, res) => {
     const juego = req.body;
-    console.log("Hola");
     if (!juego || !juego.nombre ) {
         return res.status(400).json({ mensaje: "Faltan datos para borrar el juego" });
     }
-
     try {
         const juegoExistente = await getJuegoById(juego.nombre);
         if (!juegoExistente) {

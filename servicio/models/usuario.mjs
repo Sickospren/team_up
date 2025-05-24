@@ -51,3 +51,19 @@ export const getUsuario = async (emailUsuario) => {
     usuario.nombre_usuario_app,
   );
 };
+
+export const cambiarNombreUser = async (usuarioCambiado) => {
+    const {id_usuario, nombre_usuario_app} = usuarioCambiado;
+    try {
+        const consulta = `
+            UPDATE usuario 
+            SET nombre_usuario_app = ?
+            WHERE id_usuario = ?
+        `;
+        const [resultado] = await db.execute(consulta, [nombre_usuario_app, id_usuario]);
+        return resultado;
+    } catch (error) {
+        console.error('Error al cambiar el nombre del usuario:', error);
+        throw error;
+    }
+};
