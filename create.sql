@@ -48,7 +48,12 @@ CREATE TABLE usuarios_juego (
 CREATE TABLE chat (
     id_chat INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
-    descripcion VARCHAR(255)
+    descripcion VARCHAR(255),
+    id_juego INT,
+    user_admin INT NOT NULL,
+    comunidad TINYINT(1) NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_juego) REFERENCES juegos(id_juego),
+    FOREIGN KEY (user_admin) REFERENCES usuario(id_usuario),
 );
 
 -- Tabla: chat_usuario
@@ -105,13 +110,4 @@ CREATE TABLE guias (
     privada BOOLEAN NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
     FOREIGN KEY (id_juego) REFERENCES juegos(id_juego)
-);
-
--- Tabla: comunidades
-CREATE TABLE comunidades (
-    id_comunidad INT AUTO_INCREMENT PRIMARY KEY,
-    id_juego INT NOT NULL,
-    id_chat_comunidad INT NOT NULL,
-    FOREIGN KEY (id_juego) REFERENCES juegos(id_juego),
-    FOREIGN KEY (id_chat_comunidad) REFERENCES chat(id_chat)
 );
