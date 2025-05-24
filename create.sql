@@ -16,7 +16,8 @@ CREATE TABLE usuario (
     avatar VARCHAR(255) NOT NULL,
     proveedor VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
-    fecha_registro DATE NOT NULL
+    fecha_registro DATE NOT NULL,
+    administrador TINYINT(1) NOT NULL DEFAULT 0,
 );
 
 -- Tabla: juegos
