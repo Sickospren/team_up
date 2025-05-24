@@ -1,4 +1,16 @@
-CREATE DATABASE IF NOT EXISTS team_up;
+-- Borrar las tablas existentes en orden correcto (de más dependientes a menos)
+DROP TABLE IF EXISTS usuarios_amistades;
+DROP TABLE IF EXISTS solicitudes_amistad;
+DROP TABLE IF EXISTS mensajes;
+DROP TABLE IF EXISTS chat_usuario;
+DROP TABLE IF EXISTS chat;
+DROP TABLE IF EXISTS usuarios_juego;
+DROP TABLE IF EXISTS guias;
+DROP TABLE IF EXISTS juegos;
+DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS categorias;
+
+-- Crear la base de datos y seleccionarla
 USE team_up;
 
 -- Tabla: categorias
@@ -54,7 +66,7 @@ CREATE TABLE chat (
     user_admin INT NOT NULL,
     comunidad TINYINT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_juego) REFERENCES juegos(id_juego),
-    FOREIGN KEY (user_admin) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (user_admin) REFERENCES usuario(id_usuario)
 );
 
 -- Tabla: chat_usuario
