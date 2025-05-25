@@ -5,7 +5,6 @@ const router = express.Router()
 
 
 router.get("/pendientes", getSolicitudesPenditentesEmail) //Funcionan con el email del usuario en el body
-router.get("/enviadas",getSolicitudesEnviadasEmail) //Funcionan con el email del usuario en el body
 router.post("/enviadas", revisarEnviadas) // id_remitente en el body
 router.post("/recibidas", revisarRecibidas) // id_destinatario en el body
 router.post("/nueva", newSolicitud) // id_remitente y id_destinatario en el body
