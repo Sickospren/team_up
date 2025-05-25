@@ -2,7 +2,6 @@ import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUs
 
 export const newSolicitud = async (req, res) => {
     const { id_remitente, id_destinatario } = req.body;
-    console.log(id_remitente, " // ", id_destinatario);
 
     if (!id_remitente || !id_destinatario) {
         return res.status(400).json({
@@ -53,7 +52,7 @@ export const getSolicitudesPenditentesEmail = async(req, res) => {
 
 export const getSolicitudesEnviadasEmail = async(req, res) => {
     const email = req.body.email;
-
+    console.log("email: ", email);
     if (!email) {
         return res.status(400).json({
             success: false,
@@ -78,7 +77,6 @@ export const getSolicitudesEnviadasEmail = async(req, res) => {
 
 export const revisarRecibidas = async(req, res) => {
     const id_destinatario = req.body.id_destinatario;
-
     if (!id_destinatario) {
         return res.status(400).json({
             success: false,
@@ -104,7 +102,6 @@ export const revisarRecibidas = async(req, res) => {
 
 export const revisarEnviadas = async(req, res) => {
     const id_remitente = req.body.id_remitente;
-
     if (!id_remitente) {
         return res.status(400).json({
             success: false,
