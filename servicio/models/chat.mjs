@@ -48,3 +48,42 @@ export const userBelongsToChat = async (id_usuario, id_chat) => {
         throw error;
     }
 };
+
+// Nueva función para crear un chat
+export const createChat = async (chatData) => {
+    try {
+        const { nombre, descripcion, id_juego, user_admin, comunidad } = chatData;
+        
+        const [result] = await db.query(`
+            INSERT INTO chat (nombre, descripcion, id_juego, user_admin, comunidad)
+            VALUES (?, ?, ?, ?, ?)
+        `, [nombre, descripcion, id_juego || null, user_admin, comunidad]);
+        
+        // Obtener el chat recién creado
+        const [newChat] = await db.query(`
+            SELECT c.id_chat, c.nombre, c.descripcion, c.comunidad, c.id_juego, c.user_admin,
+                   j.nombre as nombre_juego
+            FROM chat c
+            LEFT JOIN juegos j ON c.id_juego = j.id_juego
+            WHERE c.id_chat = ?
+        `, [result.insertId]);
+        
+        // Añadir automáticamente al creador como miembro del chat
+        // Obtener la fecha actual en formato YYYY-MM-DD
+        const fechaUnion = new Date().toISOString().split('T')[0];
+
+        await db.query(`
+            INSERT INTO chat_usuario (id_chat, id_usuario, fecha_union)
+            VALUES (?, ?, ?)
+        `, [result.insertId, user_admin, fechaUnion]);
+        
+        return {
+            id_chat: result.insertId,
+            chat: newChat[0],
+            message: 'Chat creado exitosamente'
+        };
+    } catch (error) {
+        console.error('Error al crear chat:', error);
+        throw error;
+    }
+};

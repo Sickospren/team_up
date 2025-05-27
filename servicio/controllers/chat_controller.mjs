@@ -1,4 +1,4 @@
-import { getChatsByUserId, getMessagesByChatId, userBelongsToChat } from '../models/chat.mjs';
+import { getChatsByUserId, getMessagesByChatId, userBelongsToChat, createChat } from '../models/chat.mjs';
 
 // Obtener todos los chats de un usuario
 export const getUserChats = async (req, res) => {
@@ -36,6 +36,47 @@ export const getChatMessages = async (req, res) => {
         res.status(500).json({ 
             mensaje: 'Error al obtener los mensajes del chat', 
             error: error.message 
+        });
+    }
+};
+
+// Nuevo controlador para crear un chat
+export const createNewChat = async (req, res) => {
+    try {
+        const { nombre, descripcion, id_juego, id_usuario, comunidad } = req.body;
+        
+        // Validaciones
+        if (!nombre || !descripcion || !id_usuario) {
+            return res.status(400).json({ 
+                error: 'Nombre, descripción e ID de usuario son requeridos' 
+            });
+        }
+
+        if (typeof comunidad !== 'number' || (comunidad !== 0 && comunidad !== 1)) {
+            return res.status(400).json({ 
+                error: 'Comunidad debe ser 0 o 1' 
+            });
+        }
+
+        const chatData = {
+            nombre: nombre.trim(),
+            descripcion: descripcion.trim(),
+            id_juego: id_juego || null,
+            user_admin: id_usuario,
+            comunidad: comunidad
+        };
+
+        const result = await createChat(chatData);
+        
+        res.status(201).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        console.error('Error en createNewChat:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor',
+            details: error.message 
         });
     }
 };
