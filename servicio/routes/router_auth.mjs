@@ -23,7 +23,8 @@ router.get('/discord/callback',
             username: req.user.username,
             email: req.user.email,
             avatar: req.user.avatar,
-            provider: req.user.provider
+            provider: req.user.provider,
+            is_admin: req.user.is_admin
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         res.redirect(`http://localhost:5173/?token=${token}`);
@@ -42,7 +43,8 @@ router.get('/google/callback',
             username: req.user.username,
             email: req.user.email,
             avatar: req.user.avatar,
-            provider: req.user.provider
+            provider: req.user.provider,
+            is_admin: req.user.is_admin
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         res.redirect(`http://localhost:5173/?token=${token}`);

@@ -46,26 +46,33 @@ passport.use(new GoogleStrategy({
                     avatar: avatar_url,
                     provider,
                     email,
-                    date: fechaMySQL
+                    date: fechaMySQL,
+                    is_admin: usuarioExistente.administrador === 1
+
                 };
 
                 return done(null, user);
             }
         } else {
-            // Si el usuario es nuevo lo insertamos en la bd
+
+            // Si el usuario es nuevo lo registramos en la BD
             const [result] = await pool.query(`
                 INSERT INTO usuario (id_oauth, nombre_usuario, avatar, proveedor, email, fecha_registro)
                 VALUES (?, ?, ?, ?, ?, ?)
             `, [id, displayName, avatar_url, provider, email, fechaMySQL]);
 
+            const [nuevo] = await pool.query(`SELECT * FROM usuario WHERE id_usuario = ?`, [result.insertId]);
+            const nuevoUsuario = nuevo[0];
+
             const user = {
-                id: result.insertId,
+                id: nuevoUsuario.id_usuario,
                 id_oauth: id,
                 username: displayName,
                 avatar: avatar_url,
                 provider,
                 email,
-                date: fechaMySQL
+                date: fechaMySQL,
+                is_admin: nuevoUsuario.administrador === 1
             };
 
             return done(null, user);
