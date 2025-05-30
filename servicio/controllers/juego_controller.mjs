@@ -1,4 +1,4 @@
-import { Juego, getAllJuegos ,getJuegoById, insertarJuego, actualizarJuego, eliminarJuego} from "../models/juego.mjs";
+import { Juego, getAllJuegos ,getJuegoById, insertarJuego, actualizarJuego, eliminarJuego, getChatsJuegoById} from "../models/juego.mjs";
 
 export const getAllJuego = async(req,res) => {
     try{        
@@ -139,3 +139,20 @@ export const borrarJuego = async (req, res) => {
         res.status(500).json({ mensaje: "Error al borrar el juego", error });
     }
 };
+
+export const getChatsJuego = async(req,res) => {
+    try{        
+        const id_juego = req.params.id_juego;
+        const chats = await getChatsJuegoById(id_juego);
+
+        if(!chats){
+            res.status(404).json({mensaje:"Not found"});
+            return
+        }
+
+        res.json(chats);
+    }catch(error){
+        res.status(500).json({mensaje:"error al conseguir los chats del juego",error});
+    }
+
+}

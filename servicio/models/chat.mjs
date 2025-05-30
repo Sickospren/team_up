@@ -87,3 +87,18 @@ export const createChat = async (chatData) => {
         throw error;
     }
 };
+
+export const abandonChat = async (id_usuario, id_chat) => {
+    try {
+        // Eliminar al usuario del chat
+        await db.query(`DELETE FROM chat_usuario WHERE id_usuario = ? AND id_chat = ?`, [id_usuario, id_chat]);
+
+        return {
+            success: true,
+            message: 'Usuario abandonó el chat exitosamente'
+        };
+    } catch (error) {
+        console.error('Error al abandonar el chat:', error);
+        throw error;
+    }
+}

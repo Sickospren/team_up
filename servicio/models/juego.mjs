@@ -1,3 +1,4 @@
+import { json } from "express";
 import db from "../config/db.mjs";
 
 export class Juego {
@@ -77,7 +78,7 @@ export const insertarJuego = async (juegoData) => {
             (nombre, descripcion, banner, foto_juego, dispositivos, id_categoria, rangos)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        
+
         const [resultado] = await db.execute(consulta, [
             nombre,
             descripcion,
@@ -134,7 +135,7 @@ export const actualizarJuego = async (juegoActualizado) => {
 };
 
 export const eliminarJuego = async (juegoBorrado) => {
-    const {nombre} = juegoBorrado;
+    const { nombre } = juegoBorrado;
     try {
         const consulta = `
             UPDATE juegos 
@@ -147,4 +148,18 @@ export const eliminarJuego = async (juegoBorrado) => {
         console.error('Error al borrar el juego:', error);
         throw error;
     }
+};
+
+export const getChatsJuegoById = async (id_juego) => {
+    const consulta = `
+            SELECT id_chat, nombre, descripcion
+            FROM chat 
+            WHERE id_juego = ? AND comunidad = 1
+        `;
+
+    const [registros] = await db.execute(consulta, [id_juego]);
+
+    if (registros.length === 0) return null;
+
+    return registros;
 };
