@@ -27,21 +27,8 @@ export const getAmistadesUsuario = async (email) => {
   }
 };
 
-export const eliminarAmistad = async (email1, email2) => {
+export const eliminarAmistad = async (id1, id2) => {
   try {
-
-    //Comprobamos que los 2 usuarios existen
-    const [[usuarioA]] = await db.query(`SELECT id_usuario FROM usuario WHERE email = ?`, [email1]);
-    const [[usuarioB]] = await db.query(`SELECT id_usuario FROM usuario WHERE email = ?`, [email2]);
-
-    if (!usuarioA || !usuarioB) {
-      console.error("Uno o ambos correos no existen en la base de datos.");
-      return false;
-    }
-
-    const id1 = usuarioA.id_usuario;
-    const id2 = usuarioB.id_usuario;
-
     //Eliminar la amistad sin importar el orden de los IDs
     await db.query(`
       DELETE FROM usuarios_amistades

@@ -1,4 +1,4 @@
-import {nuevaSolicitud,getSolicitudesPenditentesUsuario,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesEnviadas,revisarSolicitudesRecibidas,aceptarSolicitud} from "../models/solicitudes_amistad.mjs";
+import {nuevaSolicitud,getIsPendienteIds,getSolicitudesEnviadasUsuario,rechazarSolicitud,revisarSolicitudesEnviadas,revisarSolicitudesRecibidas,aceptarSolicitud} from "../models/solicitudes_amistad.mjs";
 
 export const newSolicitud = async (req, res) => {
     const { id_remitente, id_destinatario } = req.body;
@@ -25,30 +25,48 @@ export const newSolicitud = async (req, res) => {
     }
 };
 
-export const getSolicitudesPenditentesEmail = async(req, res) => {
-    const email = req.body.email;
+export const getIsPendiente = async (req, res) => {
+  const { id1, id2 } = req.params;
 
-    if (!email) {
-        return res.status(400).json({
-            success: false,
-            mensaje: "Falta el parámetro 'email'"
-        });
+  if (!id1 || !id2) {
+    return res.status(400).json({
+      success: false,
+      mensaje: "Faltan parámetros: id1 y id2 son requeridos"
+    });
+  }
+
+  try {
+    const resultado = await getIsPendienteIds(parseInt(id1), parseInt(id2));
+
+    if (resultado === 0) {
+      return res.json({
+        success: true,
+        estado: 0,
+        mensaje: "No hay solicitud pendiente"
+      });
     }
 
-    try {
-        const result = await getSolicitudesPenditentesUsuario(email);
-        res.json({
-            success: true,
-            data: (result.length === 0) ? "No hay registros" : result
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            mensaje: "Error al revisar las solicitudes",
-            error
-        });
-    }
+    const { id_solicitud, estado } = resultado;
+
+    return res.json({
+      success: true,
+      estado,
+      id_solicitud,
+      mensaje:
+        estado === 1
+          ? "Solicitud pendiente enviada por el usuario actual"
+          : "Solicitud pendiente recibida por el usuario actual"
+    });
+  } catch (error) {
+    console.error("Error en getIsPendiente:", error);
+    return res.status(500).json({
+      success: false,
+      mensaje: "Error al revisar las solicitudes pendientes",
+      error: error.message || error
+    });
+  }
 };
+
 
 export const getSolicitudesEnviadasEmail = async(req, res) => {
     const email = req.body.email;

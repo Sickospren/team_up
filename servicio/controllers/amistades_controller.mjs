@@ -28,20 +28,20 @@ export const getAmistades = async (req, res) => {
 };
 
 export const deleteAmistad = async (req, res) => {
-  const { email1, email2 } = req.body;
-
-  if (!email1 || !email2) {
+  const { id1, id2 } = req.body;
+  if (!id1 || !id2) {
     return res.status(400).json({
       success: false,
-      mensaje: "Se requieren ambos correos: 'email1' y 'email2'"
+      mensaje: "Se requieren ambos ids: 'id1' y 'id2'"
     });
   }
 
-  const success = await eliminarAmistad(email1, email2);
+  const success = await eliminarAmistad(id1, id2);
 
   if (success) {
     res.json({ success: true, mensaje: "Amistad eliminada correctamente." });
   } else {
+    console.log("error");
     res.status(500).json({ success: false, mensaje: "No se pudo eliminar la amistad." });
   }
 };
@@ -79,10 +79,9 @@ export const getSonAmigos = async (req, res) => {
    * Metodo que devuelve true si los usuarios son amigos
    */
   const resultado = await sonAmigos(idUsuario1, idUsuario2);
-  console.log(resultado)
 
   if (!resultado) {
-    return res.status(500).json({
+    return res.json({
       success: true,
       data: false,
       message: "Los usuarios no son amigos"

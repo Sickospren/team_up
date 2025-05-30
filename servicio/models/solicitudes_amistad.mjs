@@ -62,30 +62,40 @@ export const nuevaSolicitud = async (id_remitente, id_destinatario) => {
   }
 };
 
-export const getSolicitudesPenditentesUsuario = async (email) => {
-    try {
-        const [rows] = await db.query(`
-            SELECT
-            sa.id_solicitud,
-            sa.estado,
-            sa.fecha_solicitud,
+export const getIsPendienteIds = async (id_usuario_actual, id_otro_usuario) => {
+  try {
+    const [rows] = await db.query(
+      `
+      SELECT id_solicitud, id_remitente, id_destinatario
+      FROM solicitudes_amistad
+      WHERE estado = 'pendiente'
+        AND (
+          (id_remitente = ? AND id_destinatario = ?)
+          OR
+          (id_remitente = ? AND id_destinatario = ?)
+        )
+      `,
+      [id_usuario_actual, id_otro_usuario, id_otro_usuario, id_usuario_actual]
+    );
 
-            u_remitente.id_usuario AS id_remitente,
-            u_remitente.nombre_usuario As nombre_remitente,
-            u_remitente.email As email_remitente
-
-            FROM solicitudes_amistad sa
-            INNER JOIN usuario u_destinatario ON sa.id_destinatario = u_destinatario.id_usuario
-            INNER JOIN usuario u_remitente on sa.id_remitente = u_remitente.id_usuario
-            WHERE u_destinatario.email = ? AND sa.estado = 'pendiente'
-            ORDER BY sa.fecha_solicitud DESC`, [email])
-
-        return [rows]
-    } catch (error) {
-        console.error('Error al obtener solicitudes pendientes recibidas:', error);
+    if (rows.length === 0) {
+      return 0;
     }
 
-}
+    const solicitud = rows[0];
+    const estado = solicitud.id_remitente === id_usuario_actual ? 1 : 2;
+
+    return {
+      id_solicitud: solicitud.id_solicitud,
+      estado
+    };
+  } catch (error) {
+    console.error('Error al obtener estado de solicitud de amistad:', error);
+    return null;
+  }
+};
+
+
 
 export const getSolicitudesEnviadasUsuario = async (email) => {
   try {
