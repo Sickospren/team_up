@@ -1,5 +1,22 @@
 import db from '../config/db.mjs';
 
+export const getChatById = async (id_chat) => {
+    try {
+        const [chat] = await db.query(`SELECT c.id_chat, c.nombre, c.descripcion, c.comunidad, c.id_juego, j.nombre AS 'nombre_juego', c.user_admin, u.nombre_usuario
+            FROM chat c
+            LEFT JOIN juegos j ON c.id_juego = j.id_juego
+            LEFT JOIN usuario u ON c.user_admin = u.id_usuario
+            WHERE c.id_chat = ?
+            ORDER BY c.id_chat DESC`,
+            [id_chat]);
+
+        return chat;
+    } catch (error) {
+        console.error('Error al obtener chats del usuario:', error);
+        throw error;
+    }
+};
+
 // Obtener todos los chats a los que pertenece un usuario
 export const getChatsByUserId = async (id_usuario) => {
     try {
@@ -119,7 +136,7 @@ export const joinChat = async (id_usuario, id_chat) => {
 export const getUsuariosChat = async (id_chat) => {
     try {
         const [rows] = await db.query(
-            `SELECT u.id_usuario, u.nombre_usuario
+            `SELECT u.id_usuario, u.nombre_usuario, cu.fecha_union
             FROM chat_usuario cu
             JOIN usuario u ON cu.id_usuario = u.id_usuario
             WHERE cu.id_chat = ?`,

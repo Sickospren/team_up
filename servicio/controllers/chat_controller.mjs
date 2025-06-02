@@ -1,4 +1,23 @@
-import { getChatsByUserId, getMessagesByChatId, userBelongsToChat, createChat, abandonChat, joinChat, getUsuariosChat } from '../models/chat.mjs';
+import {getChatById, getChatsByUserId, getMessagesByChatId, userBelongsToChat, createChat, abandonChat, joinChat, getUsuariosChat } from '../models/chat.mjs';
+
+export const getChat = async (req, res) => {
+    try {
+        const { id_chat } = req.params;
+
+        if (!id_chat) {
+            return res.status(400).json({ mensaje: 'Se requiere el ID del chat' });
+        }
+
+        const chat = await getChatById(id_chat);
+        res.json(chat);
+    } catch (error) {
+        console.error('Error al obtener el chat:', error);
+        res.status(500).json({
+            mensaje: 'Error al obtener el chat',
+            error: error.message
+        });
+    }
+};
 
 // Obtener todos los chats de un usuario
 export const getUserChats = async (req, res) => {

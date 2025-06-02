@@ -1,7 +1,9 @@
 import express from "express";
-import { getUserChats, getChatMessages, createNewChat, abandonarChat, unirseChat, getChatUsuarios } from "../controllers/chat_controller.mjs";
+import {getChat, getUserChats, getChatMessages, createNewChat, abandonarChat, unirseChat, getChatUsuarios } from "../controllers/chat_controller.mjs";
 
 const router = express.Router();
+
+router.get("/:id_chat", getChat);
 
 // Obtener todos los chats de un usuario
 router.get("/usuario/:id_usuario", getUserChats);
