@@ -53,12 +53,12 @@ export const userBelongsToChat = async (id_usuario, id_chat) => {
 export const createChat = async (chatData) => {
     try {
         const { nombre, descripcion, id_juego, user_admin, comunidad } = chatData;
-        
+
         const [result] = await db.query(`
             INSERT INTO chat (nombre, descripcion, id_juego, user_admin, comunidad)
             VALUES (?, ?, ?, ?, ?)
         `, [nombre, descripcion, id_juego || null, user_admin, comunidad]);
-        
+
         // Obtener el chat recién creado
         const [newChat] = await db.query(`
             SELECT c.id_chat, c.nombre, c.descripcion, c.comunidad, c.id_juego, c.user_admin,
@@ -67,16 +67,10 @@ export const createChat = async (chatData) => {
             LEFT JOIN juegos j ON c.id_juego = j.id_juego
             WHERE c.id_chat = ?
         `, [result.insertId]);
-        
-        // Añadir automáticamente al creador como miembro del chat
-        // Obtener la fecha actual en formato YYYY-MM-DD
-        const fechaUnion = new Date().toISOString().split('T')[0];
 
-        await db.query(`
-            INSERT INTO chat_usuario (id_chat, id_usuario, fecha_union)
-            VALUES (?, ?, ?)
-        `, [result.insertId, user_admin, fechaUnion]);
-        
+        // Añadir automáticamente al creador como miembro del chat usando joinChat()
+        await joinChat(user_admin, result.insertId);
+
         return {
             id_chat: result.insertId,
             chat: newChat[0],
@@ -102,3 +96,39 @@ export const abandonChat = async (id_usuario, id_chat) => {
         throw error;
     }
 }
+
+export const joinChat = async (id_usuario, id_chat) => {
+    try {
+        const fecha_union = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+
+        await db.query(
+            `INSERT INTO chat_usuario (id_usuario, id_chat, fecha_union) VALUES (?, ?, ?)`,
+            [id_usuario, id_chat, fecha_union]
+        );
+
+        return {
+            success: true,
+            message: 'Usuario se unió al chat exitosamente'
+        };
+    } catch (error) {
+        console.error('Error al unirse al chat:', error);
+        throw error;
+    }
+};
+
+export const getUsuariosChat = async (id_chat) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT u.id_usuario, u.nombre_usuario
+            FROM chat_usuario cu
+            JOIN usuario u ON cu.id_usuario = u.id_usuario
+            WHERE cu.id_chat = ?`,
+            [id_chat]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error('Error al obtener usuarios del chat:', error);
+        throw error;
+    }
+};

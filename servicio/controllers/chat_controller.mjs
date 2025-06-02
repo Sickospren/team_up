@@ -1,4 +1,4 @@
-import { getChatsByUserId, getMessagesByChatId, userBelongsToChat, createChat, abandonChat } from '../models/chat.mjs';
+import { getChatsByUserId, getMessagesByChatId, userBelongsToChat, createChat, abandonChat, joinChat, getUsuariosChat } from '../models/chat.mjs';
 
 // Obtener todos los chats de un usuario
 export const getUserChats = async (req, res) => {
@@ -103,3 +103,46 @@ export const abandonarChat = async (req, res) => {
         });
     }
 }
+
+export const unirseChat = async (req, res) => {
+    try {
+        const { id_usuario, id_chat } = req.body;
+
+        if (!id_usuario || !id_chat) {
+            return res.status(400).json({ mensaje: 'Se requiere el ID del usuario y del chat' });
+        }
+
+        const result = await joinChat(id_usuario, id_chat);
+
+        res.status(201).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        console.error('Error al unirse al chat:', error);
+        res.status(500).json({
+            mensaje: 'Error al unirse al chat',
+            error: error.message
+        });
+    }
+};
+
+export const getChatUsuarios = async (req, res) => {
+    try {
+        const { id_chat } = req.params;
+
+        if (!id_chat) {
+            return res.status(400).json({ mensaje: 'Se requiere el ID del chat' });
+        }
+
+        const usuarios = await getUsuariosChat(id_chat);
+
+        res.json(usuarios);
+    } catch (error) {
+        console.error('Error al obtener usuarios del chat:', error);
+        res.status(500).json({
+            mensaje: 'Error al obtener usuarios del chat',
+            error: error.message
+        });
+    }
+};
