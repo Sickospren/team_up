@@ -36,9 +36,9 @@ passport.use(new GoogleStrategy({
                 // Si el proveedor es el mismo actualizamos los datos
                 await pool.query(`
                     UPDATE usuario
-                    SET nombre_usuario = ?, avatar = ?, fecha_registro = ?
+                    SET nombre_usuario = ?, avatar = ?
                     WHERE email = ?
-                `, [displayName, avatar_url, fechaMySQL, email]);
+                `, [displayName, avatar_url, email]);
 
                 const user = {
                     id: usuarioExistente.id_usuario,
