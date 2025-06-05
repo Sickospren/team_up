@@ -113,14 +113,66 @@ CREATE TABLE usuarios_amistades (
     CHECK (id_usuario_1 < id_usuario_2)
 );
 
+-- Tabla: campeones
+CREATE TABLE campeones (
+    nombre VARCHAR(50) PRIMARY KEY
+);
+
 -- Tabla: guias
 CREATE TABLE guias (
     id_guia INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_juego INT NOT NULL,
+    campeon_nombre VARCHAR(50) NOT NULL,
     contenido_guia JSON,
     fecha DATE NOT NULL,
     privada BOOLEAN NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_juego) REFERENCES juegos(id_juego)
+    FOREIGN KEY (id_juego) REFERENCES juegos(id_juego),
+    FOREIGN KEY (campeon_nombre) REFERENCES campeones(nombre)
 );
+
+-- Insert campeones 
+INSERT INTO campeones (nombre ) VALUES
+('Aatrox'),('Ahri'),('Akali'),('Akshan'),
+('Alistar'),('Ambessa'),('Amumu'),('Anivia'),
+('Annie'),('Aphelios'),('Ashe'),('Aurelion Sol'),
+('Aurora'),('Azir'),('Bardo'),('Bel''Veth'),
+('Blitzcrank'),('Brand'),('Braum'),('Briar'),
+('Caitlyn'),('Camille'),('Cassiopeia'),('Cho''Gath'),
+('Corki'),('Darius'),('Diana'),('Dr. Mundo'),
+('Draven'),('Ekko'),('Elise'),('Evelynn'),
+('Ezreal'),('Fiddlesticks'),('Fiora'),('Fizz'),
+('Galio'),('Gangplank'),('Garen'),('Gnar'),
+('Gragas'),('Graves'),('Gwen'),('Hecarim'),
+('Heimerdinger'),('Hwei'),('Illaoi'),('Irelia'),
+('Ivern'),('Janna'),('Jarvan IV'),('Jax'),
+('Jayce'),('Jhin'),('Jinx'),('Kai''Sa'),
+('Kalista'),('Karma'),('Karthus'),('Kassadin'),
+('Katarina'),('Kayle'),('Kayn'),('Kennen'),
+('Kha''Zix'),('Kindred'),('Kled'),('Kog''Maw'),
+('LeBlanc'),('Lee Sin'),('Leona'),('Lillia'),
+('Lissandra'),('Lucian'),('Lulu'),('Lux'),
+('Maestro Yi'),('Malphite'),('Malzahar'),('Maokai'),
+('Mel'),('Miss Fortune'),('Mordekaiser'),('Morgana'),
+('Nami'),('Nasus'),('Nautilus'),('Neeko'),
+('Nidalee'),('Nilah'),('Nocturne'),('Nunu y Willump'),
+('Olaf'),('Orianna'),('Ornn'),('Pantheon'),
+('Poppy'),('Pyke'),('Qiyana'),('Quinn'),
+('Rakan'),('Rammus'),('Rek''Sai'),('Rell'),
+('Renata Glasc'),('Renekton'),('Rengar'),
+('Riven'),('Rumble'),('Ryze'),('Samira'),
+('Sejuani'),('Senna'),('Seraphine'),('Sett'),
+('Shaco'),('Shen'),('Shyvana'),('Singed'),
+('Sion'),('Sivir'),('Skarner'),('Smolder'),
+('Sona'),('Soraka'),('Swain'),('Sylas'),
+('Syndra'),('Tahm Kench'),('Taliyah'),('Talon'),
+('Taric'),('Teemo'),('Thresh'),('Tristana'),
+('Trundle'),('Tryndamere'),('Twisted Fate'),('Twitch'),
+('Udyr'),('Urgot'),('Varus'),('Vayne'),
+('Veigar'),('Vel''Koz'),('Vex'),('Vi'),
+('Viego'),('Viktor'),('Vladimir'),('Volibear'),
+('Warwick'),('Wukong'),('Xayah'),('Xerath'),
+('Xin Zhao'),('Yasuo'),('Yone'),('Yorick'),
+('Yuumi'),('Zac'),('Zed'),('Zeri'),
+('Ziggs'),('Zilean'),('Zoe'),('Zyra'),('K''Sante');
