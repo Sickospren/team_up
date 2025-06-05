@@ -7,7 +7,7 @@ import router_categoria from "./router_categoria.mjs"
 import router_usuarios_amistad from "./router_solicitudes_amistad.mjs"
 import router_amistades from "./router_amistades.mjs"
 import router_usuarios_juego from "./router_usuarios_juego.mjs"
-
+import router_guias from "./router_guias.mjs"
 
 const router = express.Router()
 
@@ -37,6 +37,7 @@ router.use("/categorias", router_categoria)
 router.use("/solicitudes", router_usuarios_amistad)
 router.use("/amistades", router_amistades)
 router.use("/usuarios_juegos", router_usuarios_juego)
+router.use("/guias", router_guias)
 
 export default router
 
