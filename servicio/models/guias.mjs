@@ -106,3 +106,44 @@ export const getGuiasByUsuario = async (id_usuario) => {
     throw error;
   }
 };
+
+export const deleteGuiaById = async (id_guia) => {
+  try {
+    const [result] = await db.query(`
+      DELETE FROM guias
+      WHERE id_guia = ?
+    `, [id_guia]);
+
+    return result.affectedRows > 0; // true si se eliminó algo
+  } catch (error) {
+    console.error("Error al eliminar la guía:", error);
+    throw error;
+  }
+};
+
+
+export const getGuiaById = async (id_guia) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        g.id_guia,
+        g.id_usuario,
+        u.nombre_usuario,
+        u.email,
+        g.id_juego,
+        g.campeon_nombre,
+        g.contenido_guia,
+        g.fecha,
+        g.privada
+      FROM guias g
+      INNER JOIN usuario u ON g.id_usuario = u.id_usuario
+      WHERE g.id_guia = ?
+
+    `, [id_guia]);
+
+    return rows[0];
+  } catch (error) {
+    console.error("Error al verificar propiedad de la guía:", error);
+    throw error;
+  }
+};
