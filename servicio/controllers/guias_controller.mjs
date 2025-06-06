@@ -95,8 +95,7 @@ export const selectGuiasPorUsuario = async (req, res) => {
 
 
 export const eliminarGuia = async (req, res) => {
-  const { id } = req.params;
-  const { id_usuario } = req.body;
+  const { id, id_usuario } = req.body;
 
   if (!id) {
     return res.status(400).json({ success: false, mensaje: "Falta Id Guia" });

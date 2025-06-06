@@ -8,7 +8,7 @@ router.get("/", selectGuias)
 router.get("/champ/:campeon", selectGuiasPorCampeon)
 router.get("/user/:id_usuario", selectGuiasPorUsuario)
 router.get("/:id", obtenerGuiaPorId)
-router.delete("/delete/:id", eliminarGuia)
+router.delete("/delete", eliminarGuia)
 
 
 export default router
