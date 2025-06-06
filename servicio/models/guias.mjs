@@ -28,10 +28,20 @@ export const insertGuia = async (id_usuario, id_juego, campeon_nombre, contenido
 export const getGuias = async () => {
   try {
     const [rows] = await db.query(`
-      SELECT id_guia, id_usuario, id_juego, campeon_nombre, contenido_guia, fecha, privada
-      FROM guias
-      WHERE privada = 0
-      ORDER BY fecha DESC
+      SELECT 
+        g.id_guia,
+        g.id_usuario,
+        u.nombre_usuario,
+        u.email,
+        g.id_juego,
+        g.campeon_nombre,
+        g.contenido_guia,
+        g.fecha,
+        g.privada
+      FROM guias g
+      INNER JOIN usuario u ON g.id_usuario = u.id_usuario
+      WHERE g.privada = 0
+      ORDER BY g.fecha DESC
     `);
 
     return rows;
@@ -45,16 +55,26 @@ export const getGuias = async () => {
 export const getGuiasByCampeon = async (campeonNombre) => {
   try {
     const [rows] = await db.query(`
-      SELECT id_guia, id_usuario, id_juego, campeon_nombre, contenido_guia, fecha, privada
-      FROM guias
-      WHERE privada = 0 AND campeon_nombre = ?
-      ORDER BY fecha DESC
+      SELECT 
+        g.id_guia,
+        g.id_usuario,
+        u.nombre_usuario,
+        u.email,
+        g.id_juego,
+        g.campeon_nombre,
+        g.contenido_guia,
+        g.fecha,
+        g.privada
+      FROM guias g
+      INNER JOIN usuario u ON g.id_usuario = u.id_usuario
+      WHERE g.privada = 0 AND g.campeon_nombre = ?
+      ORDER BY g.fecha DESC
     `, [campeonNombre]);
 
     return rows;
 
   } catch (error) {
-    console.error("Error al obtener las guías públicas por campeón:", error);
+    console.error("Error al obtener las guías por campeón:", error);
     throw error;
   }
 };
@@ -63,10 +83,20 @@ export const getGuiasByCampeon = async (campeonNombre) => {
 export const getGuiasByUsuario = async (id_usuario) => {
   try {
     const [rows] = await db.query(`
-      SELECT id_guia, id_usuario, id_juego, campeon_nombre, contenido_guia, fecha, privada
-      FROM guias
-      WHERE id_usuario = ?
-      ORDER BY fecha DESC
+      SELECT 
+        g.id_guia,
+        g.id_usuario,
+        u.nombre_usuario,
+        u.email,
+        g.id_juego,
+        g.campeon_nombre,
+        g.contenido_guia,
+        g.fecha,
+        g.privada
+      FROM guias g
+      INNER JOIN usuario u ON g.id_usuario = u.id_usuario
+      WHERE g.id_usuario = ?
+      ORDER BY g.fecha DESC
     `, [id_usuario]);
 
     return rows;
