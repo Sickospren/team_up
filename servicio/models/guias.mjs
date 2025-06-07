@@ -149,3 +149,15 @@ export const getGuiaById = async (id_guia) => {
     throw error;
   }
 };
+
+
+export const getCampeones = async () => {
+  try {
+    const [rows] = await db.query(`SELECT nombre FROM campeones`);
+    return rows;
+
+  } catch (error) {
+    console.error("Error al obtener los campeones:", error);
+    throw error;
+  }
+};

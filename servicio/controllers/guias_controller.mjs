@@ -1,4 +1,4 @@
-import { insertGuia, getGuias, getGuiasByCampeon, getGuiasByUsuario, getGuiaById, deleteGuiaById } from "../models/guias.mjs";
+import { insertGuia, getGuias, getGuiasByCampeon, getGuiasByUsuario, getGuiaById, deleteGuiaById, getCampeones } from "../models/guias.mjs";
 
 
 export const crearGuia = async (req, res) => {
@@ -153,6 +153,21 @@ export const obtenerGuiaPorId = async (req, res) => {
       success: false,
       mensaje: "Error del servidor al obtener la guía"
     });
+  }
+};
+
+
+export const listarCampeones = async (req, res) => {
+  try {
+    const campeones = await getCampeones();
+
+    return res.status(200).json({
+      success: true,
+      campeones: campeones
+    });
+  } catch (error) {
+    console.error("Error al listar campeones:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
