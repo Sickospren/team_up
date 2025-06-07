@@ -45,7 +45,6 @@ export const getGuias = async () => {
       WHERE g.privada = 0
       ORDER BY g.fecha DESC
     `);
-
     return rows;
 
   } catch (error) {

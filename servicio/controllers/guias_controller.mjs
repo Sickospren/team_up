@@ -76,9 +76,7 @@ export const selectGuiasPorUsuario = async (req, res) => {
     if (!id_usuario) {
       return res.status(400).json({ success: false, error: 'Falta el parámetro id_usuario' });
     }
-
     const guias = await getGuiasByUsuario(id_usuario);
-
     return res.json({
       success: true,
       data: guias
