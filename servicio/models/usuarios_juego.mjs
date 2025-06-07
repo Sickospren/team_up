@@ -117,22 +117,6 @@ export const getUsuarioJuego = async (idUsuario, idJuego) => {
 };
 
 
-export const getUsuariosJuegos = async() =>{
-
-  const [usuarios] = await db.query(`SELECT * FROM usuario`);
-
-  for (const usuario of usuarios) {
-    const [juegos] = await db.query(
-      `SELECT id_juego FROM usuarios_juego WHERE id_usuario = ?`, 
-      [usuario.id_usuario]
-    );
-    usuario.juegos = juegos.map(j => j.id_juego)
-  }
-
-  return usuarios;
-
-}
-
 // Función que ya no se usa, pero se deja comentada:
 // export const existeGameTag = async (gameTag) => {
 //   const [result] = await db.query(

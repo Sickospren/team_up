@@ -5,8 +5,7 @@ import {
   eliminarUsuarioJuego,
   // comprobarGameTag,
   getJuegosUsuario,
-  getUsuarioPorJuego,
-  listarUsuariosJuegos
+  getUsuarioPorJuego
 } from "../controllers/usuarios_juego_controller.mjs"; // Asegúrate que el nombre del archivo coincida
 
 const router = express.Router();
@@ -16,7 +15,6 @@ const router = express.Router();
 // router.get("/gameTag/:gameTag", comprobarGameTag); // Recibe el gameTag para buscar como param
 router.get("/juego/:id_juego/:id_usuario", getUsuarioPorJuego); //devuelve los datos si existe o null
 router.get("/usuario/:id_usuario", getJuegosUsuario); // Recibe la id del usuario como param
-router.get('/usuarios', listarUsuariosJuegos);
 
 /**
  * Recibe id_usuario, id_juego, gameTag y datosExtraJuego (JSON) en el body

@@ -13,8 +13,15 @@ export class Usuario {
 }
 
 export const getAll = async () => {
-    const [registros] = await db.query("SELECT * FROM usuario");
-    return registros;
+    const [usuarios] = await db.query("SELECT * FROM usuario");
+    for (const usuario of usuarios) {
+        const [juegos] = await db.query(
+        `SELECT id_juego FROM usuarios_juego WHERE id_usuario = ?`, 
+        [usuario.id_usuario]
+        );
+        usuario.juegos = juegos.map(j => j.id_juego)
+    }
+    return usuarios;
 }
 
 export const getId = async (email) => {
