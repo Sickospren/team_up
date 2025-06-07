@@ -3,6 +3,7 @@ import {
   guardarUsuarioJuego,
   deleteUsuarioJuego,
   getUsuarioJuego,
+  getUsuariosJuegos 
   // getUsuariosPorJuego,
   // existeGameTag
 } from "../models/usuarios_juego.mjs";
@@ -154,6 +155,22 @@ export const getUsuarioPorJuego = async (req, res) => {
     });
   }
 
+};
+
+export const listarUsuariosJuegos = async (req, res) => {
+  try {
+    const usuariosConJuegos = await getUsuariosJuegos();
+    return res.status(200).json({
+      success: true,
+      usuarios: usuariosConJuegos
+    });
+  } catch (error) {
+    console.error("Error al listar usuarios y juegos:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor"
+    });
+  }
 };
 
 

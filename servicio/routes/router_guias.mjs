@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get("/champ/:campeon", selectGuiasPorCampeon)
 router.get("/user/:id_usuario", selectGuiasPorUsuario)
-router.get('/campeonesFiltro', listarCampeones)
+router.get('/campeones', listarCampeones)
 router.post("/new", crearGuia)
 router.get("/:id", obtenerGuiaPorId)
 router.delete("/delete", eliminarGuia)
