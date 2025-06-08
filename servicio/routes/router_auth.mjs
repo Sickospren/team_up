@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import '../strategies/discord.mjs';
 import '../strategies/google.mjs';
 
+dotenv.config();
 
 const router = express.Router()
 
@@ -13,7 +14,7 @@ router.get('/google', passport.authenticate('google', { scope: ['email', 'profil
 
 router.get('/discord/callback',
     passport.authenticate('discord', {
-        failureRedirect: 'http://localhost:5173/LoginError', 
+        failureRedirect: `${process.env.CLIENTE_IP}/LoginError`, 
         session: false
     }),
     (req, res) => {
@@ -27,13 +28,13 @@ router.get('/discord/callback',
             is_admin: req.user.is_admin
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.redirect(`http://localhost:5173/?token=${token}`);
+        res.redirect(`${process.env.CLIENTE_IP}/?token=${token}`);
     }
 );
 
 router.get('/google/callback',
     passport.authenticate('google', {
-        failureRedirect: 'http://localhost:5173/LoginError',
+        failureRedirect: `${process.env.CLIENTE_IP}/LoginError`,
         session: false
     }),
     (req, res) => {
@@ -47,7 +48,7 @@ router.get('/google/callback',
             is_admin: req.user.is_admin
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.redirect(`http://localhost:5173/?token=${token}`);
+        res.redirect(`${process.env.CLIENTE_IP}/?token=${token}`);
     }
 );
 

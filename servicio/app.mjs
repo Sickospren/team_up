@@ -7,6 +7,10 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { configurarSocketIO } from "./socket/socketManager.mjs";
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const app = express()
 
 // Crear servidor HTTP usando la app Express
@@ -15,7 +19,7 @@ const server = createServer(app);
 // Configurar Socket.io con el servidor HTTP
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: process.env.CLIENTE_IP,
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -26,7 +30,7 @@ configurarSocketIO(io);
 
 // Middlewares globales
 app.use(cors({
-    origin: `http://localhost:5173`,
+    origin: process.env.CLIENTE_IP,
     credentials: true
 }));
 
