@@ -9,24 +9,24 @@ import router_amistades from "./router_amistades.mjs"
 import router_usuarios_juego from "./router_usuarios_juego.mjs"
 import router_guias from "./router_guias.mjs"
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const router = express.Router()
 
+// Middleware para validar la API key
+router.use((req, res, next) => {
+    // Excluir rutas que comienzan con /auth
+    if (req.path.startsWith("/auth")) return next()
 
-// Rutas temporales para el login
-// Por el momento estoy jugando con el login en el servidor
-router.get('/', (req, res) => {
-    res.send(`
-      <h2>Inicia sesión</h2>
-      <a href="/auth/discord">Iniciar sesión con Discord</a><br>
-      <a href="/auth/google">Iniciar sesión con Google</a>
-    `);
-  });
+    const apiKey = req.header("x-api-key") || req.query.api_key
+    if (!apiKey || apiKey !== process.env.API_KEY) {
+        return res.status(401).json({ error: "API key inválida o faltante" })
+    }
 
-  router.get('/logout', (req, res) => {
-    req.logout(() => {
-        res.redirect('/');
-    });
-});
+    next()
+})
   
 
 router.use("/usuario", router_usuario)
