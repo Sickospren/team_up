@@ -13,7 +13,7 @@ export class Usuario {
 }
 
 export const getAll = async () => {
-    const [usuarios] = await db.query("SELECT * FROM usuario");
+    const [usuarios] = await db.query("SELECT * FROM usuario WHERE administrador = 0");
     for (const usuario of usuarios) {
         const [juegos] = await db.query(
         `SELECT id_juego FROM usuarios_juego WHERE id_usuario = ?`, 
