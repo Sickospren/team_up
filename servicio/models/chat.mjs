@@ -1,4 +1,25 @@
 import db from '../config/db.mjs';
+import CryptoJS from 'crypto-js'
+
+// Clave de encriptación desde variables de entorno
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'tu-clave-secreta-muy-segura-aqui';
+
+// Función para desencriptar mensajes
+const decryptMessage = (encryptedMessage) => {
+    try {
+        if (!encryptedMessage) return '';
+
+        const bytes = CryptoJS.AES.decrypt(encryptedMessage, ENCRYPTION_KEY);
+        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+        // Si no se puede desencriptar, devolver el mensaje original
+        // (útil para mensajes que no están encriptados aún)
+        return decrypted || encryptedMessage;
+    } catch (error) {
+        console.error('Error al desencriptar mensaje:', error);
+        return encryptedMessage; // Devolver mensaje original si falla
+    }
+};
 
 export const getChatById = async (id_chat) => {
     try {
@@ -34,18 +55,26 @@ export const getChatsByUserId = async (id_usuario) => {
     }
 };
 
-// Obtener todos los mensajes de un chat
+// Obtener todos los mensajes de un chat (CON DESENCRIPTACIÓN)
 export const getMessagesByChatId = async (id_chat) => {
     try {
-        const [mensajes] = await db.query(`SELECT m.id_mensaje, m.id_usuario, m.mensaje as content, 
-            u.nombre as username, m.fecha_mensaje
+        const [mensajes] = await db.query(`SELECT m.id_mensaje, m.id_usuario, m.mensaje as encrypted_content, 
+            u.nombre_usuario as username, m.fecha_mensaje
             FROM mensajes m
             INNER JOIN usuario u ON m.id_usuario = u.id_usuario
             WHERE m.id_chat = ?
             ORDER BY m.fecha_mensaje ASC`,
             [id_chat]);
 
-        return mensajes;
+        // Desencriptar cada mensaje antes de devolverlo
+        const mensajesDesencriptados = mensajes.map(mensaje => ({
+            ...mensaje,
+            content: decryptMessage(mensaje.encrypted_content),
+            // Eliminar el campo encriptado para no enviarlo al cliente
+            encrypted_content: undefined
+        }));
+
+        return mensajesDesencriptados;
     } catch (error) {
         console.error('Error al obtener mensajes del chat:', error);
         throw error;

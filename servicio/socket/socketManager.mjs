@@ -1,7 +1,33 @@
 import db from "../config/db.mjs";
 import dotenv from 'dotenv';
+import CryptoJS from 'crypto-js';
 
 dotenv.config();
+
+// Clave de encriptación desde variables de entorno
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+
+// Funciones de encriptación y desencriptación
+const encryptMessage = (message) => {
+  try {
+    const encrypted = CryptoJS.AES.encrypt(message, ENCRYPTION_KEY).toString();
+    return encrypted;
+  } catch (error) {
+    console.error('Error al encriptar mensaje:', error);
+    return message; // Devolver mensaje original si falla la encriptación
+  }
+};
+
+const decryptMessage = (encryptedMessage) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedMessage, ENCRYPTION_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    return decrypted || encryptedMessage; // Si no se puede desencriptar, devolver original
+  } catch (error) {
+    console.error('Error al desencriptar mensaje:', error);
+    return encryptedMessage; // Devolver mensaje encriptado si falla la desencriptación
+  }
+};
 
 export function configurarSocketIO(io) {
   io.on('connection', async (socket) => {
@@ -36,9 +62,9 @@ export function configurarSocketIO(io) {
           );
         }
 
-        // Cargar historial de mensajes
+        // Cargar historial de mensajes y desencriptarlos
         const [messages] = await db.query(
-          `SELECT m.id_mensaje, m.mensaje as content, m.id_chat, m.id_usuario, u.nombre_usuario as username, m.fecha_mensaje 
+          `SELECT m.id_mensaje, m.mensaje as encrypted_content, m.id_chat, m.id_usuario, u.nombre_usuario as username, m.fecha_mensaje 
            FROM mensajes m 
            JOIN usuario u ON m.id_usuario = u.id_usuario 
            WHERE m.id_chat = ? 
@@ -46,7 +72,13 @@ export function configurarSocketIO(io) {
           [idChat]
         );
         
-        socket.emit('load messages', messages);
+        // Desencriptar mensajes antes de enviarlos al cliente
+        const decryptedMessages = messages.map(msg => ({
+          ...msg,
+          content: decryptMessage(msg.encrypted_content)
+        }));
+        
+        socket.emit('load messages', decryptedMessages);
       } catch (e) {
         console.error('Error al procesar unión a sala:', e);
       }
@@ -75,7 +107,7 @@ export function configurarSocketIO(io) {
           chatId = existingChat[0].id_chat;
         } else {
           // Crear un nuevo chat privado
-          let nombre_chat = [username, otherUser].sort().join('_');
+          let nombre_chat = [username, otherUserId].sort().join('_');
           const [result] = await db.query(
             'INSERT INTO chat (nombre, descripcion) VALUES (?, ?)',
             [`Chat privado ${nombre_chat}`, 'Chat privado entre dos usuarios']
@@ -102,31 +134,40 @@ export function configurarSocketIO(io) {
         
         console.log(`${username} (ID: ${userId}) inició/se unió a un chat privado con usuario ID: ${otherUserId}`);
 
-        // Cargar historial de mensajes
+        // Cargar historial de mensajes y desencriptarlos
         const [messages] = await db.query(
-          `SELECT m.id_mensaje, m.mensaje as content, u.nombre_usuario as username, m.fecha_mensaje 
+          `SELECT m.id_mensaje, m.mensaje as encrypted_content, m.id_chat, m.id_usuario, u.nombre_usuario as username, m.fecha_mensaje 
            FROM mensajes m 
-           JOIN usuarios u ON m.id_usuario = u.id_usuario 
+           JOIN usuario u ON m.id_usuario = u.id_usuario 
            WHERE m.id_chat = ? 
            ORDER BY m.fecha_mensaje ASC`,
           [chatId]
         );
         
-        socket.emit('load messages', messages);
+        // Desencriptar mensajes antes de enviarlos al cliente
+        const decryptedMessages = messages.map(msg => ({
+          ...msg,
+          content: decryptMessage(msg.encrypted_content)
+        }));
+        
+        socket.emit('load messages', decryptedMessages);
       } catch (e) {
         console.error('Error al procesar chat privado:', e);
       }
     });
 
-    // Enviar mensaje
+    // Enviar mensaje (ahora con encriptación)
     socket.on('chat message', async (msg) => {
       if (!socket.data.idChat || !socket.data.idUsuario) return;
 
       try {
-        // Guardar mensaje en la base de datos
-        await db.query(
+        // Encriptar el mensaje antes de guardarlo
+        const encryptedMessage = encryptMessage(msg);
+        
+        // Guardar mensaje encriptado en la base de datos
+        const [result] = await db.query(
           'INSERT INTO mensajes (id_chat, id_usuario, mensaje, fecha_mensaje) VALUES (?, ?, ?, NOW())',
-          [socket.data.idChat, socket.data.idUsuario, msg]
+          [socket.data.idChat, socket.data.idUsuario, encryptedMessage]
         );
         
         // Obtener el nombre de usuario para enviarlo con el mensaje
@@ -137,10 +178,12 @@ export function configurarSocketIO(io) {
         
         const username = userData[0]?.nombre_usuario || 'Usuario desconocido';
         
-        // Emitir mensaje a todos los usuarios en la sala
+        // Emitir mensaje DESENCRIPTADO a todos los usuarios en la sala
+        // (El mensaje se guarda encriptado pero se envía desencriptado a los clientes)
         io.to(`chat_${socket.data.idChat}`).emit('chat message', { 
+          id_mensaje: result.insertId,
           username: username, 
-          content: msg,
+          content: msg, // Mensaje original (desencriptado)
           id_usuario: socket.data.idUsuario,
           fecha_mensaje: new Date()
         });
@@ -154,3 +197,6 @@ export function configurarSocketIO(io) {
     });
   });
 }
+
+// Funciones auxiliares para usar en otras partes de la aplicación
+export { encryptMessage, decryptMessage };
