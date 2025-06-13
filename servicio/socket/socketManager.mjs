@@ -25,7 +25,7 @@ const decryptMessage = (encryptedMessage) => {
     return decrypted || encryptedMessage; // Si no se puede desencriptar, devolver original
   } catch (error) {
     console.error('Error al desencriptar mensaje:', error);
-    return encryptedMessage; // Devolver mensaje encriptado si falla la desencriptación
+    return encryptedMessage;
   }
 };
 
@@ -156,7 +156,7 @@ export function configurarSocketIO(io) {
       }
     });
 
-    // Enviar mensaje (ahora con encriptación)
+    // Enviar mensaje
     socket.on('chat message', async (msg) => {
       if (!socket.data.idChat || !socket.data.idUsuario) return;
 
@@ -178,12 +178,11 @@ export function configurarSocketIO(io) {
         
         const username = userData[0]?.nombre_usuario || 'Usuario desconocido';
         
-        // Emitir mensaje DESENCRIPTADO a todos los usuarios en la sala
-        // (El mensaje se guarda encriptado pero se envía desencriptado a los clientes)
+        // Emitir mensaje a todos los usuarios en la sala
         io.to(`chat_${socket.data.idChat}`).emit('chat message', { 
           id_mensaje: result.insertId,
           username: username, 
-          content: msg, // Mensaje original (desencriptado)
+          content: msg,
           id_usuario: socket.data.idUsuario,
           fecha_mensaje: new Date()
         });

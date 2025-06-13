@@ -4,14 +4,9 @@ import {getChat, getUserChats, getChatMessages, createNewChat, abandonarChat, un
 const router = express.Router();
 
 router.get("/:id_chat", getChat);
-
-// Obtener todos los chats de un usuario
-router.get("/usuario/:id_usuario", getUserChats);
-
-// Obtener todos los mensajes de un chat
-router.get("/:id_chat/mensajes", getChatMessages);
-router.get("/:id_chat/usuarios", getChatUsuarios);
-
+router.get("/usuario/:id_usuario", getUserChats); // Devuelve los chats donde está un usuario
+router.get("/:id_chat/mensajes", getChatMessages); // Devuelve los mensajes de un chat 
+router.get("/:id_chat/usuarios", getChatUsuarios); // Devuelve los usuarios de un chat
 router.post('/crearChat', createNewChat);
 router.post('/unirseChat', unirseChat);
 router.delete('/abandonarChat', abandonarChat);
