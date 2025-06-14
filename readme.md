@@ -37,7 +37,7 @@ Construido con **Node.js + Express** y una base de datos relacional **MySQL**, p
 
 4. Ejecutar el servidor:
    ```bash
-    cd .\servicio
+    cd .\servicio\
     node --watch .\server.mjs
 
 ## 🌐 Pruébalo
