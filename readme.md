@@ -37,7 +37,8 @@ Construido con **Node.js + Express** y una base de datos relacional **MySQL**, p
 
 4. Ejecutar el servidor:
    ```bash
-    node .\servicio\server.mjs
+    cd .\servicio
+    node --watch .\server.mjs
 
 ## 🌐 Pruébalo
 - 👉 http://sicko.vps.webdock.cloud/
